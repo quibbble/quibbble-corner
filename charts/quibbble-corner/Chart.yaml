@@ -1,0 +1,6 @@
+apiVersion: v2
+name: quibbble-corner
+description: quibbble corner
+type: application
+version: 0.1.4
+appVersion: latest
