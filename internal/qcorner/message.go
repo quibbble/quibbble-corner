@@ -15,11 +15,11 @@ type ConnectionMessage struct {
 }
 
 type Player struct {
-	UserID   string
-	Username string
+	UserID   string `json:"uid"`
+	Username string `json:"username"`
 }
 
 type ChatMessage struct {
 	*Player
-	Message string
+	Message string `json:"message"`
 }
