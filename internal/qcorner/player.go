@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 const (
@@ -67,8 +66,8 @@ func (c *Connection) ReadPump(ctx context.Context) error {
 	c.mu.Unlock()
 
 	for {
-		var msg string
-		if err := wsjson.Read(ctx, c.conn, &msg); err != nil {
+		_, msg, err := c.conn.Read(ctx)
+		if err != nil {
 			return err
 		}
 		if c.player.UserID == ReadOnly {
@@ -76,7 +75,7 @@ func (c *Connection) ReadPump(ctx context.Context) error {
 		}
 		c.inputCh <- &ChatMessage{
 			Player:  c.player,
-			Message: msg,
+			Message: string(msg),
 		}
 	}
 }
