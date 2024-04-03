@@ -25,5 +25,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	qcorner.ServeHTTP(port, a.Authenticate)
+	qcorner.ServeHTTP(port, a.Retrieve)
 }
