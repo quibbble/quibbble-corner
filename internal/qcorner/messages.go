@@ -3,8 +3,15 @@ package qcorner
 import "encoding/json"
 
 func (qc *QCorner) broadcastConnectionMessage() {
+	players := make([]*Player, 0)
 	for p := range qc.connected {
-		payload, _ := json.Marshal(Message{})
+		players = append(players, p.player)
+	}
+	payload, _ := json.Marshal(Message{
+		Type:    ConnectionType,
+		Details: players,
+	})
+	for p := range qc.connected {
 		qc.sendMessage(p, payload)
 	}
 }
