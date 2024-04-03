@@ -3,7 +3,7 @@ module github.com/quibbble/quibbble-corner
 go 1.22
 
 require (
-	github.com/quibbble/quibbble-controller v0.0.0-20240403182916-96178db45cef
+	github.com/quibbble/quibbble-controller v0.0.0-20240403194305-49000682e3cf
 	nhooyr.io/websocket v1.8.10
 )
 
