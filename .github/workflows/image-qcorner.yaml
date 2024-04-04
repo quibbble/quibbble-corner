@@ -7,7 +7,7 @@ on:
 
 jobs:
   push_to_registry:
-    name: Build and push controller image
+    name: Build and push qcorner image
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo

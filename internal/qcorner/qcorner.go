@@ -33,8 +33,8 @@ func NewQCorner(authenticate func(http.Handler) http.Handler) *QCorner {
 		inputCh:   make(chan *ChatMessage),
 	}
 	go gs.Start()
-	gs.mux.Handle("/qcorner/connect", authenticate(http.HandlerFunc(gs.connectHandler)))
-	gs.mux.HandleFunc("/health", healthHandler)
+	gs.mux.Handle("GET /qcorner", authenticate(http.HandlerFunc(gs.connectHandler)))
+	gs.mux.HandleFunc("GET /health", healthHandler)
 	return gs
 }
 

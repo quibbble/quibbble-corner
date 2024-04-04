@@ -74,8 +74,9 @@ func (c *Connection) ReadPump(ctx context.Context) error {
 			continue
 		}
 		c.inputCh <- &ChatMessage{
-			Player:  c.player,
-			Message: string(msg),
+			Player:    c.player,
+			Message:   string(msg),
+			Timestamp: time.Now().Unix(),
 		}
 	}
 }

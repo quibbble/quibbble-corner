@@ -1,15 +1,28 @@
 package qcorner
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"slices"
+)
 
 func (qc *QCorner) broadcastConnectionMessage() {
-	players := make([]*Player, 0)
+	players := make([]string, 0)
+	usernames := make(map[string]string)
 	for p := range qc.connected {
-		players = append(players, p.player)
+		if !slices.Contains(players, p.player.UserID) {
+			players = append(players, p.player.UserID)
+			usernames[p.player.UserID] = p.player.Username
+		}
 	}
 	payload, _ := json.Marshal(Message{
-		Type:    ConnectionType,
-		Details: players,
+		Type: ConnectionType,
+		Details: struct {
+			Players   []string          `json:"players"`
+			Usernames map[string]string `json:"usernames"`
+		}{
+			Players:   players,
+			Usernames: usernames,
+		},
 	})
 	for p := range qc.connected {
 		qc.sendMessage(p, payload)

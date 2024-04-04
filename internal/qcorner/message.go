@@ -21,5 +21,6 @@ type Player struct {
 
 type ChatMessage struct {
 	*Player
-	Message string `json:"message"`
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
 }
