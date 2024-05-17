@@ -23,12 +23,6 @@ spec:
       - name: quibbble-corner
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        env:
-        - name: AUTH_KEY
-          valueFrom:
-            secretKeyRef:
-              name: quibbble-controller
-              key: auth-key
         livenessProbe:
           httpGet:
             path: /health

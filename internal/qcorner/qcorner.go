@@ -25,7 +25,7 @@ type QCorner struct {
 	messages []*ChatMessage
 }
 
-func NewQCorner(authenticate func(http.Handler) http.Handler) *QCorner {
+func NewQCorner() *QCorner {
 	gs := &QCorner{
 		connected: make(map[*Connection]struct{}),
 		joinCh:    make(chan *Connection),
@@ -33,7 +33,7 @@ func NewQCorner(authenticate func(http.Handler) http.Handler) *QCorner {
 		inputCh:   make(chan *ChatMessage),
 	}
 	go gs.Start()
-	gs.mux.Handle("GET /qcorner", authenticate(http.HandlerFunc(gs.connectHandler)))
+	gs.mux.Handle("GET /qcorner", http.HandlerFunc(gs.connectHandler))
 	gs.mux.HandleFunc("GET /health", healthHandler)
 	return gs
 }

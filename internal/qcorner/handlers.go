@@ -5,17 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/quibbble/quibbble-controller/pkg/auth"
 	"nhooyr.io/websocket"
 )
-
-const ReadOnly = "readOnly"
 
 func (qc *QCorner) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	qc.mux.ServeHTTP(w, r)
 }
 
 func (qc *QCorner) connectHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
 		InsecureSkipVerify: true, // allow origin checks are handled at the ingress
 	})
@@ -24,16 +27,7 @@ func (qc *QCorner) connectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, ok := r.Context().Value(auth.UserID).(string)
-	if !ok {
-		userId = ReadOnly
-	}
-	username, ok := r.Context().Value(auth.Username).(string)
-	if !ok {
-		username = ReadOnly
-	}
-
-	p := NewConnection(&Player{userId, username}, conn, qc.inputCh)
+	p := NewConnection(&Player{name}, conn, qc.inputCh)
 	qc.joinCh <- p
 
 	ctx := context.Background()

@@ -10,17 +10,12 @@ type Message struct {
 	Details interface{} `json:"details"`
 }
 
-type ConnectionMessage struct {
-	Players []*Player `json:"players"`
-}
-
 type Player struct {
-	UserID   string `json:"uid"`
-	Username string `json:"username"`
+	Name string `json:"name"`
 }
 
 type ChatMessage struct {
-	*Player
+	Name      string `json:"name"`
 	Message   string `json:"message"`
 	Timestamp int64  `json:"timestamp"`
 }

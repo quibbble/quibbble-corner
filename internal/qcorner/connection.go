@@ -70,11 +70,8 @@ func (c *Connection) ReadPump(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		if c.player.UserID == ReadOnly {
-			continue
-		}
 		c.inputCh <- &ChatMessage{
-			Player:    c.player,
+			Name:      c.player.Name,
 			Message:   string(msg),
 			Timestamp: time.Now().Unix(),
 		}

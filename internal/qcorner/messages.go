@@ -6,22 +6,18 @@ import (
 )
 
 func (qc *QCorner) broadcastConnectionMessage() {
-	players := make([]string, 0)
-	usernames := make(map[string]string)
+	names := make([]string, 0)
 	for p := range qc.connected {
-		if !slices.Contains(players, p.player.UserID) {
-			players = append(players, p.player.UserID)
-			usernames[p.player.UserID] = p.player.Username
+		if !slices.Contains(names, p.player.Name) {
+			names = append(names, p.player.Name)
 		}
 	}
 	payload, _ := json.Marshal(Message{
 		Type: ConnectionType,
 		Details: struct {
-			Players   []string          `json:"players"`
-			Usernames map[string]string `json:"usernames"`
+			Names []string `json:"names"`
 		}{
-			Players:   players,
-			Usernames: usernames,
+			Names: names,
 		},
 	})
 	for p := range qc.connected {
