@@ -4,12 +4,13 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
+	"sync"
 	"time"
 )
 
 const (
-	storageLimit   = 10
-	storageTimeout = time.Minute * 10
+	storageLimit   = 50
+	storageTimeout = time.Minute * 30
 )
 
 type QCorner struct {
@@ -27,22 +28,26 @@ type QCorner struct {
 
 	// messages is the list of past messages
 	messages []*ChatMessage
+
+	// mu on messages
+	mu sync.Mutex
 }
 
 func NewQCorner() *QCorner {
-	gs := &QCorner{
+	qc := &QCorner{
 		connected: make(map[*Connection]struct{}),
 		joinCh:    make(chan *Connection),
 		leaveCh:   make(chan *Connection),
 		inputCh:   make(chan *ChatMessage),
 	}
-	go gs.Start()
-	gs.mux.Handle("GET /qcorner", http.HandlerFunc(gs.connectHandler))
-	gs.mux.HandleFunc("GET /health", healthHandler)
-	return gs
+	go qc.start()
+	go qc.clean()
+	qc.mux.Handle("GET /qcorner", http.HandlerFunc(qc.connectHandler))
+	qc.mux.HandleFunc("GET /health", healthHandler)
+	return qc
 }
 
-func (qc *QCorner) Start() {
+func (qc *QCorner) start() {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatal(string(debug.Stack()))
@@ -60,11 +65,31 @@ func (qc *QCorner) Start() {
 			go p.Close()
 			qc.broadcastConnectionMessage()
 		case msg := <-qc.inputCh:
+			qc.mu.Lock()
 			qc.messages = append(qc.messages, msg)
 			if len(qc.messages) > storageLimit {
 				qc.messages = qc.messages[1:]
 			}
+			qc.mu.Unlock()
 			qc.broadcastChatMessage(msg)
 		}
+	}
+}
+
+func (qc *QCorner) clean() {
+	// remove messages older than storageTimeout
+	for range time.Minute {
+		qc.mu.Lock()
+		idx := -1
+		for i, msg := range qc.messages {
+			t := time.Unix(msg.Timestamp, 0)
+			if t.Add(storageTimeout).After(time.Now()) {
+				idx = i
+			}
+		}
+		if idx != -1 {
+			qc.messages = qc.messages[idx:]
+		}
+		qc.mu.Unlock()
 	}
 }
