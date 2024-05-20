@@ -3,6 +3,7 @@ package qcorner
 import (
 	"encoding/json"
 	"slices"
+	"time"
 )
 
 func (qc *QCorner) broadcastConnectionMessage() {
@@ -36,6 +37,18 @@ func (qc *QCorner) broadcastChatMessage(msg *ChatMessage) {
 }
 
 func (qc *QCorner) sendChatMessages(player *Connection) {
+	// remove messages older than storageTimeout
+	idx := -1
+	for i, msg := range qc.messages {
+		t := time.Unix(msg.Timestamp, 0)
+		if t.Add(storageTimeout).After(time.Now()) {
+			idx = i
+		}
+	}
+	if idx != -1 {
+		qc.messages = qc.messages[idx:]
+	}
+
 	for _, msg := range qc.messages {
 		payload, _ := json.Marshal(Message{
 			Type:    ChatType,

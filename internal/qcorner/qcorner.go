@@ -4,9 +4,13 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
 
-const storageLimit = 10
+const (
+	storageLimit   = 10
+	storageTimeout = time.Minute * 10
+)
 
 type QCorner struct {
 	// mux routes the various endpoints to the appropriate handler.
