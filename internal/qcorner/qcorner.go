@@ -88,7 +88,7 @@ func (qc *QCorner) clean() {
 			}
 		}
 		if idx != -1 {
-			qc.messages = qc.messages[idx:]
+			qc.messages = qc.messages[idx+1:]
 		}
 		qc.mu.Unlock()
 	}
