@@ -5,10 +5,10 @@ metadata:
   labels:
     {{- include "quibbble-corner.labels" . | nindent 4 }}
   annotations:
+    "nginx.ingress.kubernetes.io/proxy-read-timeout": "1800"
     "nginx.ingress.kubernetes.io/enable-cors": "true"
     "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, POST, HEAD, OPTIONS"
     "nginx.ingress.kubernetes.io/cors-allow-credentials": "true"
-		"nginx.ingress.kubernetes.io/proxy-read-timeout": "1800"
     "nginx.ingress.kubernetes.io/cors-allow-origin": {{ join "," .Values.allowOrigins | quote }}
 spec:
   rules:
