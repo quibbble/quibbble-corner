@@ -24,10 +24,10 @@ type QCorner struct {
 	joinCh, leaveCh chan *Connection
 
 	// inputCh sends actions to the server to be processed.
-	inputCh chan *ChatMessage
+	inputCh chan *ServerAction
 
 	// messages is the list of past messages
-	messages []*ChatMessage
+	messages []*ChatDetails
 
 	// mu on messages
 	mu sync.Mutex
@@ -38,7 +38,7 @@ func NewQCorner() *QCorner {
 		connected: make(map[*Connection]struct{}),
 		joinCh:    make(chan *Connection),
 		leaveCh:   make(chan *Connection),
-		inputCh:   make(chan *ChatMessage),
+		inputCh:   make(chan *ServerAction),
 	}
 	go qc.start()
 	go qc.clean()
@@ -64,14 +64,28 @@ func (qc *QCorner) start() {
 			delete(qc.connected, p)
 			go p.Close()
 			qc.broadcastConnectionMessage()
-		case msg := <-qc.inputCh:
-			qc.mu.Lock()
-			qc.messages = append(qc.messages, msg)
-			if len(qc.messages) > storageLimit {
-				qc.messages = qc.messages[1:]
+		case a := <-qc.inputCh:
+			switch a.Type {
+			case Ping:
+				qc.sendPongMessage(a.Connection)
+			case Chat:
+				details, ok := a.Details.(string)
+				if !ok {
+					continue
+				}
+				msg := &ChatDetails{
+					Name:      a.player.Name,
+					Message:   details,
+					Timestamp: time.Now().Unix(),
+				}
+				qc.mu.Lock()
+				qc.messages = append(qc.messages, msg)
+				if len(qc.messages) > storageLimit {
+					qc.messages = qc.messages[1:]
+				}
+				qc.mu.Unlock()
+				qc.broadcastChatMessage(msg)
 			}
-			qc.mu.Unlock()
-			qc.broadcastChatMessage(msg)
 		}
 	}
 }
@@ -83,7 +97,7 @@ func (qc *QCorner) clean() {
 		idx := -1
 		for i, msg := range qc.messages {
 			t := time.Unix(msg.Timestamp, 0)
-			if t.Add(storageTimeout).After(time.Now()) {
+			if t.Add(storageTimeout).Before(time.Now()) {
 				idx = i
 			}
 		}

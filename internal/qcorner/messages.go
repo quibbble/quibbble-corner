@@ -13,7 +13,7 @@ func (qc *QCorner) broadcastConnectionMessage() {
 		}
 	}
 	payload, _ := json.Marshal(Message{
-		Type: ConnectionType,
+		Type: ConnectionMessage,
 		Details: struct {
 			Names []string `json:"names"`
 		}{
@@ -25,9 +25,9 @@ func (qc *QCorner) broadcastConnectionMessage() {
 	}
 }
 
-func (qc *QCorner) broadcastChatMessage(msg *ChatMessage) {
+func (qc *QCorner) broadcastChatMessage(msg *ChatDetails) {
 	payload, _ := json.Marshal(Message{
-		Type:    ChatType,
+		Type:    ChatMessage,
 		Details: msg,
 	})
 	for p := range qc.connected {
@@ -40,11 +40,18 @@ func (qc *QCorner) sendChatMessages(player *Connection) {
 	defer qc.mu.Unlock()
 	for _, msg := range qc.messages {
 		payload, _ := json.Marshal(Message{
-			Type:    ChatType,
+			Type:    ChatMessage,
 			Details: msg,
 		})
 		qc.sendMessage(player, payload)
 	}
+}
+
+func (qc *QCorner) sendPongMessage(player *Connection) {
+	payload, _ := json.Marshal(Message{
+		Type: PongMessage,
+	})
+	qc.sendMessage(player, payload)
 }
 
 func (qc *QCorner) sendMessage(player *Connection, payload []byte) {

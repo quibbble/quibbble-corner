@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"nhooyr.io/websocket"
+	"nhooyr.io/websocket/wsjson"
 )
 
 const (
@@ -34,7 +35,7 @@ type Connection struct {
 
 	// inputCh provides a channel the player can use to
 	// send messages to the game server.
-	inputCh chan *ChatMessage
+	inputCh chan *ServerAction
 
 	// conn is the underlying websocket connection between
 	// the player and the game server.
@@ -48,7 +49,7 @@ type Connection struct {
 	mu sync.Mutex
 }
 
-func NewConnection(player *Player, conn *websocket.Conn, inputCh chan *ChatMessage) *Connection {
+func NewConnection(player *Player, conn *websocket.Conn, inputCh chan *ServerAction) *Connection {
 	return &Connection{
 		player:   player,
 		outputCh: make(chan []byte, playerMessageBuffer),
@@ -66,14 +67,13 @@ func (c *Connection) ReadPump(ctx context.Context) error {
 	c.mu.Unlock()
 
 	for {
-		_, msg, err := c.conn.Read(ctx)
-		if err != nil {
+		var action Action
+		if err := wsjson.Read(ctx, c.conn, &action); err != nil {
 			return err
 		}
-		c.inputCh <- &ChatMessage{
-			Name:      c.player.Name,
-			Message:   string(msg),
-			Timestamp: time.Now().Unix(),
+		c.inputCh <- &ServerAction{
+			Connection: c,
+			Action:     &action,
 		}
 	}
 }

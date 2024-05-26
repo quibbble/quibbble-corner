@@ -1,8 +1,9 @@
 package qcorner
 
 const (
-	ConnectionType = "connection"
-	ChatType       = "chat"
+	ConnectionMessage = "connection"
+	ChatMessage       = "chat"
+	PongMessage       = "pong"
 )
 
 type Message struct {
@@ -14,7 +15,7 @@ type Player struct {
 	Name string `json:"name"`
 }
 
-type ChatMessage struct {
+type ChatDetails struct {
 	Name      string `json:"name"`
 	Message   string `json:"message"`
 	Timestamp int64  `json:"timestamp"`
