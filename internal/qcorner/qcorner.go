@@ -92,7 +92,7 @@ func (qc *QCorner) start() {
 
 func (qc *QCorner) clean() {
 	// remove messages older than storageTimeout
-	for range time.Minute {
+	for range time.Tick(time.Minute) {
 		qc.mu.Lock()
 		idx := -1
 		for i, msg := range qc.messages {
