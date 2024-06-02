@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func ServeHTTP(port string) {
+func ServeHTTP(port, adminUsername, adminPassword string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)
@@ -19,7 +19,7 @@ func ServeHTTP(port string) {
 	log.Printf("listening on %v", l.Addr())
 
 	s := &http.Server{
-		Handler:      NewQCorner(),
+		Handler:      NewQCorner(adminUsername, adminPassword),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}

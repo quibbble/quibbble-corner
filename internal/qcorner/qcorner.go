@@ -16,6 +16,9 @@ const (
 )
 
 type QCorner struct {
+	// admin user info
+	adminUsername, adminPassword string
+
 	// mux routes the various endpoints to the appropriate handler.
 	mux http.ServeMux
 
@@ -35,12 +38,14 @@ type QCorner struct {
 	mu sync.Mutex
 }
 
-func NewQCorner() *QCorner {
+func NewQCorner(adminUsername, adminPassword string) *QCorner {
 	qc := &QCorner{
-		connected: make(map[*Connection]struct{}),
-		joinCh:    make(chan *Connection),
-		leaveCh:   make(chan *Connection),
-		inputCh:   make(chan *ServerAction),
+		adminUsername: adminUsername,
+		adminPassword: adminPassword,
+		connected:     make(map[*Connection]struct{}),
+		joinCh:        make(chan *Connection),
+		leaveCh:       make(chan *Connection),
+		inputCh:       make(chan *ServerAction),
 	}
 	go qc.start()
 	go qc.clean()

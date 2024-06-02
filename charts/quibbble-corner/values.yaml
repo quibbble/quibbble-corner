@@ -14,3 +14,6 @@ image:
   repository: docker.io/quibbble/qcorner
   tag: latest
   pullPolicy: IfNotPresent
+
+admin:
+  username: quibbble

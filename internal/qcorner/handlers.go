@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 
 	"nhooyr.io/websocket"
 )
@@ -16,6 +17,15 @@ func (qc *QCorner) connectHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name == "" {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	// admin auth
+	split := strings.Split(name, ":")
+	if len(split) == 2 && split[0] == qc.adminUsername && split[1] == qc.adminPassword {
+		name = split[0]
+	} else if split[0] == qc.adminUsername {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 

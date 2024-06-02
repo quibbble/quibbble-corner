@@ -28,3 +28,11 @@ spec:
             path: /health
             port: {{ .Values.port }}
           initialDelaySeconds: 3
+        env:
+        - name: ADMIN_USERNAME
+          value: {{ .Values.admin.username }}
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "quibbble-corner.fullname" . }}
+              key: admin-password
