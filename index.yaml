@@ -3,6 +3,16 @@ entries:
   quibbble-corner:
   - apiVersion: v2
     appVersion: latest
+    created: "2024-06-02T21:23:08.929416399Z"
+    description: quibbble corner
+    digest: 733a1c3f05a224e17cc21039e03637e9153e41095ebc8a6d329f5bcf79f6bfc9
+    name: quibbble-corner
+    type: application
+    urls:
+    - https://github.com/quibbble/quibbble-corner/releases/download/helm-chart-0.1.6/quibbble-corner-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: latest
     created: "2024-06-02T21:16:10.924706946Z"
     description: quibbble corner
     digest: 31b1641fe45da25c31947f7bfde961813617f5d8402d93509ac35ad0b4daa5b8
@@ -61,4 +71,4 @@ entries:
     urls:
     - https://github.com/quibbble/quibbble-corner/releases/download/helm-chart-0.1.0/quibbble-corner-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-02T21:16:10.924734708Z"
+generated: "2024-06-02T21:23:08.929442598Z"
