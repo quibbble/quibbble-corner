@@ -6,6 +6,8 @@ import (
 	"runtime/debug"
 	"sync"
 	"time"
+
+	goaway "github.com/TwiN/go-away"
 )
 
 const (
@@ -69,13 +71,14 @@ func (qc *QCorner) start() {
 			case Ping:
 				qc.sendPongMessage(a.Connection)
 			case Chat:
-				details, ok := a.Details.(string)
+				message, ok := a.Details.(string)
 				if !ok {
 					continue
 				}
+				message = goaway.Censor(message)
 				msg := &ChatDetails{
 					Name:      a.player.Name,
-					Message:   details,
+					Message:   message,
 					Timestamp: time.Now().Unix(),
 				}
 				qc.mu.Lock()
