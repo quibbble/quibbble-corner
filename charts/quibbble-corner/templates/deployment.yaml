@@ -29,6 +29,8 @@ spec:
             port: {{ .Values.port }}
           initialDelaySeconds: 3
         env:
+        - name: PORT
+          value: {{ .Values.port }}
         - name: ADMIN_USERNAME
           value: {{ .Values.admin.username }}
         - name: ADMIN_PASSWORD
