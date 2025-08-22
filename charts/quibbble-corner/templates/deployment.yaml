@@ -36,5 +36,5 @@ spec:
         - name: ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "quibbble-corner.fullname" . }}
+              name: {{ default .Values.cornerSecretName (include "quibbble-corner.fullname" .) }}
               key: admin-password
