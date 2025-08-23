@@ -2,13 +2,19 @@
 
 replicaCount: 1
 
-allowOrigins: []
-
 port: 8080
 
 ingress:
-  host: ""
-  port: 80
+  enabled: false
+  annotations: {}
+  path: /
+  pathType: ImplementationSpecific
+  hosts: []
+  # - name: ""
+  #   tls:
+  #     enabled: false
+  #     secretName: ""
+  ingressClassName: nginx
 
 image:
   repository: docker.io/quibbble/qcorner

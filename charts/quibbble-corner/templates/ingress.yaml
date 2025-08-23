@@ -1,24 +1,49 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullname := (include "quibbble-fullname" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "quibbble-corner.fullname" . }}
+  name: {{ $fullname }}
   labels:
     {{- include "quibbble-corner.labels" . | nindent 4 }}
-  annotations:
-    "nginx.ingress.kubernetes.io/proxy-read-timeout": "1800"
-    "nginx.ingress.kubernetes.io/enable-cors": "true"
-    "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, POST, HEAD, OPTIONS"
-    "nginx.ingress.kubernetes.io/cors-allow-credentials": "true"
-    "nginx.ingress.kubernetes.io/cors-allow-origin": {{ join "," .Values.allowOrigins | quote }}
+  {{- with .Values.ingress.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- $anyTlsHosts := false -}}
+  {{- range .Values.ingress.hosts }}
+  {{- if .tls }}
+  {{- if .tls.enabled }}
+  {{- $anyTlsHosts = true -}}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if $anyTlsHosts }}
+  tls:
+  {{- range .Values.ingress.hosts }}
+  {{- if .tls }}
+  {{- if .tls.enabled }}
+    - secretName: {{ .tls.secretName }}
+      hosts:
+        - {{ .name | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
   rules:
-    - host: {{ .Values.ingress.host }}
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .name  }}
       http:
         paths:
-          - path: /qcorner
-            pathType: Prefix
-            backend:
+          - backend:
               service:
-                name: {{ include "quibbble-corner.fullname" . }}
+                name: {{ $fullname }}
                 port:
-                  number: {{ .Values.ingress.port }}
+                  number: 80
+            {{- if $.Values.ingress.path }}
+            path: {{ $.Values.ingress.path }}
+            pathType: {{ $.Values.ingress.pathType }}
+            {{- end }}
+  {{- end }}
+{{- end }}
