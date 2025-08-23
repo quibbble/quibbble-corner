@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled }}
-{{- $fullname := (include "quibbble-fullname" .) }}
+{{- $fullname := (include "quibbble-corner.fullname" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
