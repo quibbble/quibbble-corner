@@ -38,3 +38,7 @@ spec:
             secretKeyRef:
               name: {{ default .Values.cornerSecretName (include "quibbble-corner.fullname" .) }}
               key: admin-password
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 10 }}
+      affinity: {{- toYaml .Values.affinity | nindent 10 }}
+      tolerations: {{- toYaml .Values.tolerations | nindent 10 }}

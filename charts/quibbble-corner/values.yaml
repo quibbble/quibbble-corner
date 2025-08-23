@@ -21,14 +21,30 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-# This secret is created for you if no 'cornerSecretName' is specified:
+# This secret is created for you if no 'cornerSecretName' is specified.
+# Otherwise create a secret with these same data parameters and use it by
+# setting the 'cornerSecretName' field with the name of the secret.
 # 
-#  apiVersion: v1
-#  kind: Secret
-#  data:
-#    admin-password: <base64_encoded admin password>
-#  type: Opaque
+# kind: Secret
+# apiVersion: v1
+# metadata:
+#   name: quibbble-corner
+# type: Opaque
+# data:
+#   admin-password: <base64_encoded admin password>
+
 cornerSecretName: ~
 admin:
   username: quibbble
   password: ~
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+nodeSelector: {}
+affinity: {}
+tolerations: []
